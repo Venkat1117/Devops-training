@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>✈️ WanderWing | Travel Booking System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #e9f0f5 0%, #d9e2ec 100%);
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    /* main container */
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(1px);
+      border-radius: 3rem;
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    /* header + hero section */
+    .hero {
+      background: linear-gradient(105deg, #0b2b40 0%, #144d5c 100%);
+      padding: 2rem 2.5rem;
+      color: white;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .brand h1 {
+      font-size: 2.2rem;
+      letter-spacing: -0.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand h1 span {
+      background: #f9b43a;
+      font-size: 1.7rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 40px;
+      color: #1e2f3a;
+    }
+
+    .tagline {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      font-weight: 400;
+    }
+
+    .booking-card {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 2rem;
+      margin: 1.5rem 2rem 2rem 2rem;
+      padding: 1.8rem 2rem;
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* tabs style */
+    .tab-bar {
+      display: flex;
+      gap: 1rem;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 2rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 0.75rem 1.8rem;
+      cursor: pointer;
+      border-radius: 40px 40px 0 0;
+      transition: all 0.2s;
+      color: #3a5468;
+    }
+
+    .tab-btn.active {
+      background: #f9b43a;
+      color: #1e2f3a;
+      box-shadow: 0 -2px 0 #f9b43a;
+    }
+
+    .tab-pane {
+      display: none;
+      animation: fade 0.25s ease;
+    }
+
+    .tab-pane.active-pane {
+      display: block;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(6px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    /* forms grid */
+    .form-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .input-group {
+      flex: 1 1 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .input-group label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #2c4b60;
+    }
+
+    .input-group input, .input-group select {
+      padding: 0.75rem 1rem;
+      border-radius: 60px;
+      border: 1px solid #cfdfed;
+      background: white;
+      font-size: 0.9rem;
+      transition: 0.2s;
+      outline: none;
+    }
+
+    .input-group input:focus, .input-group select:focus {
+      border-color: #f9b43a;
+      box-shadow: 0 0 0 3px rgba(249, 180, 58, 0.2);
+    }
+
+    .search-btn {
+      background: #0b2b40;
+      border: none;
+      padding: 0 2rem;
+      border-radius: 60px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 1.8rem;
+      height: 48px;
+      align-self: flex-end;
+    }
+
+    .search-btn:hover {
+      background: #f9b43a;
+      color: #0b2b40;
+      transform: scale(0.97);
+    }
+
+    /* results section */
+    .results-section {
+      background: #fefefe;
+      border-radius: 1.5rem;
+      margin: 1rem 2rem 2rem 2rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .results-section h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
+      color: #144d5c;
+      border-left: 5px solid #f9b43a;
+      padding-left: 1rem;
+    }
+
+    .booking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .booking-card-item {
+      background: #ffffff;
+      border-radius: 1.2rem;
+      padding: 1.2rem 1.5rem;
+      border: 1px solid #eef3fc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .booking-card-item:hover {
+      border-color: #f9b43a;
+      transform: translateY(-2px);
+    }
+
+    .offer-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .offer-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #1e2f3a;
+    }
+
+    .offer-meta {
+      font-size: 0.85rem;
+      color: #5f7f96;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .price {
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: #0b2b40;
+    }
+
+    .book-btn {
+      background: #f9b43a;
+      border: none;
+      padding: 0.65rem 1.5rem;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #1e2f3a;
+    }
+
+    .book-btn:hover {
+      background: #e09d2a;
+      transform: scale(0.96);
+    }
+
+    .my-bookings {
+      background: #f6fafd;
+      border-radius: 1.5rem;
+      margin: 1rem 2rem 2rem 2rem;
+      padding: 1.5rem;
+    }
+
+    .badge {
+      background: #eef2f6;
+      border-radius: 40px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .empty-msg {
+      text-align: center;
+      padding: 2rem;
+      color: #7895aa;
+    }
+
+    hr {
+      margin: 0.5rem 0;
+      opacity: 0.3;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: #486e82;
+    }
+
+    @media (max-width: 780px) {
+      body {
+        padding: 1rem;
+      }
+      .booking-card {
+        margin: 1rem;
+        padding: 1rem;
+      }
+      .results-section, .my-bookings {
+        margin: 1rem;
+      }
+      .search-btn {
+        width: 100%;
+      }
+      .booking-card-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.9rem;
+      }
+      .price {
+        align-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="hero">
+    <div class="brand">
+      <h1>✈️ WanderWing <span>travel</span></h1>
+      <div class="tagline">smart bookings • seamless journeys</div>
+    </div>
+  </div>
+
+  <!-- main booking form card -->
+  <div class="booking-card">
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="flights">✈️ FLIGHTS</button>
+      <button class="tab-btn" data-tab="hotels">🏨 HOTELS</button>
+    </div>
+
+    <!-- FLIGHT FORM -->
+    <div id="flightsPane" class="tab-pane active-pane">
+      <div class="form-grid">
+        <div class="input-group">
+          <label>From</label>
+          <input type="text" id="flightFrom" placeholder="e.g., New York" value="New York">
+        </div>
+        <div class="input-group">
+          <label>To</label>
+          <input type="text" id="flightTo" placeholder="e.g., London" value="London">
+        </div>
+        <div class="input-group">
+          <label>Departure</label>
+          <input type="date" id="flightDepart">
+        </div>
+        <div class="input-group">
+          <label>Return</label>
+          <input type="date" id="flightReturn">
+        </div>
+        <div class="input-group">
+          <label>Passengers</label>
+          <select id="flightPassengers">
+            <option value="1">1 Adult</option>
+            <option value="2" selected>2 Adults</option>
+            <option value="3">3 Adults</option>
+            <option value="4">4 Adults</option>
+          </select>
+        </div>
+        <button class="search-btn" id="searchFlightsBtn">🔍 SEARCH FLIGHTS</button>
+      </div>
+    </div>
+
+    <!-- HOTEL FORM -->
+    <div id="hotelsPane" class="tab-pane">
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Destination / City</label>
+          <input type="text" id="hotelCity" placeholder="e.g., Paris" value="Paris">
+        </div>
+        <div class="input-group">
+          <label>Check-in</label>
+          <input type="date" id="hotelCheckin">
+        </div>
+        <div class="input-group">
+          <label>Check-out</label>
+          <input type="date" id="hotelCheckout">
+        </div>
+        <div class="input-group">
+          <label>Guests</label>
+          <select id="hotelGuests">
+            <option value="1">1 Guest</option>
+            <option value="2" selected>2 Guests</option>
+            <option value="3">3 Guests</option>
+            <option value="4">4 Guests</option>
+          </select>
+        </div>
+        <button class="search-btn" id="searchHotelsBtn">🔍 SEARCH HOTELS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- search results dynamic area -->
+  <div class="results-section" id="resultsSection">
+    <h3>📋 Available results</h3>
+    <div id="searchResultsList" class="booking-list">
+      <div class="empty-msg">✨ Use the search above to find flights or hotels</div>
+    </div>
+  </div>
+
+  <!-- MY BOOKINGS (Travel booking system) -->
+  <div class="my-bookings">
+    <h3 style="display: flex; gap: 0.5rem;">📌 My Bookings <span class="badge" id="bookingCount">0</span></h3>
+    <div id="myBookingsList" class="booking-list">
+      <div class="empty-msg">📭 No bookings yet. Click "Book Now" on any offer!</div>
+    </div>
+  </div>
+  <footer>🌍 WanderWing — real-time dummy booking system. Your journeys, our passion.</footer>
+</div>
+
+<script>
+  // ---------- DATA MODELS ----------
+  // Mock flight & hotel databases (dynamic)
+  const flightOffersDB = [
+    { id: "fl1", from: "New York", to: "London", airline: "British Airways", price: 540, duration: "7h 20m", departureDate: "2026-05-15", returnDate: "2026-05-22" },
+    { id: "fl2", from: "New York", to: "Paris", airline: "Air France", price: 610, duration: "8h 10m", departureDate: "2026-06-10", returnDate: "2026-06-18" },
+    { id: "fl3", from: "Los Angeles", to: "Tokyo", airline: "ANA", price: 980, duration: "11h 45m", departureDate: "2026-07-01", returnDate: "2026-07-10" },
+    { id: "fl4", from: "Chicago", to: "Dubai", airline: "Emirates", price: 870, duration: "12h 30m", departureDate: "2026-05-20", returnDate: "2026-05-28" },
+    { id: "fl5", from: "London", to: "Rome", airline: "easyJet", price: 180, duration: "2h 25m", departureDate: "2026-05-18", returnDate: "2026-05-22" },
+    { id: "fl6", from: "New York", to: "Miami", airline: "Delta", price: 220, duration: "3h 10m", departureDate: "2026-05-25", returnDate: "2026-05-30" },
+    { id: "fl7", from: "San Francisco", to: "Seoul", airline: "Korean Air", price: 790, duration: "11h 50m", departureDate: "2026-06-05", returnDate: "2026-06-12" },
+    { id: "fl8", from: "Berlin", to: "Barcelona", airline: "Lufthansa", price: 155, duration: "2h 15m", departureDate: "2026-05-30", returnDate: "2026-06-04" },
+    { id: "fl9", from: "Paris", to: "New York", airline: "Delta", price: 580, duration: "8h 05m", departureDate: "2026-07-12", returnDate: "2026-07-20" },
+  ];
+
+  const hotelOffersDB = [
+    { id: "hot1", city: "Paris", hotelName: "Eiffel Vue", pricePerNight: 210, stars: 4, rating: 8.9 },
+    { id: "hot2", city: "London", hotelName: "The Westminster", pricePerNight: 195, stars: 4, rating: 8.5 },
+    { id: "hot3", city: "Tokyo", hotelName: "Shinjuku Granbell", pricePerNight: 175, stars: 3, rating: 8.2 },
+    { id: "hot4", city: "Dubai", hotelName: "Burj Vista", pricePerNight: 320, stars: 5, rating: 9.4 },
+    { id: "hot5", city: "Rome", hotelName: "Vatican Suites", pricePerNight: 145, stars: 3, rating: 8.0 },
+    { id: "hot6", city: "Miami", hotelName: "Ocean Breeze", pricePerNight: 260, stars: 4, rating: 8.7 },
+    { id: "hot7", city: "Barcelona", hotelName: "Gaudi Dream", pricePerNight: 170, stars: 4, rating: 8.4 },
+    { id: "hot8", city: "Seoul", hotelName: "Myeongdong Central", pricePerNight: 140, stars: 3, rating: 8.1 },
+    { id: "hot9", city: "New York", hotelName: "Times Square Lux", pricePerNight: 310, stars: 4, rating: 8.9 },
+    { id: "hot10", city: "Berlin", hotelName: "Mitte Arts", pricePerNight: 125, stars: 3, rating: 8.3 },
+  ];
+
+  // ---------- GLOBALS ----------
+  let currentFlightResults = [];     // stores flight result objects for "Book now"
+  let currentHotelResults = [];     // stores hotel result objects with nights info for dynamic price
+  let activeTab = "flights";        // 'flights' or 'hotels'
+  let bookings = [];                // each booking: {type, title, details, totalPrice, id, timestamp}
+
+  // Load existing bookings from localStorage
+  function loadBookingsFromStorage() {
+    const stored = localStorage.getItem("wanderwing_bookings");
+    if(stored) {
+      bookings = JSON.parse(stored);
+    } else {
+      bookings = [];
+    }
+    renderMyBookings();
+  }
+
+  function saveBookingsToStorage() {
+    localStorage.setItem("wanderwing_bookings", JSON.stringify(bookings));
+    renderMyBookings();
+  }
+
+  // Helper: add booking
+  function addBooking(bookingObj) {
+    bookings.unshift(bookingObj); // newest first
+    saveBookingsToStorage();
+  }
+
+  // Render My Bookings section
+  function renderMyBookings() {
+    const container = document.getElementById("myBookingsList");
+    const countBadge = document.getElementById("bookingCount");
+    countBadge.innerText = bookings.length;
+    if(bookings.length === 0) {
+      container.innerHTML = `<div class="empty-msg">📭 No bookings yet. Click "Book Now" on any offer!</div>`;
+      return;
+    }
+    container.innerHTML = "";
+    bookings.forEach((booking, idx) => {
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "booking-card-item";
+      itemDiv.innerHTML = `
+        <div class="offer-details">
+          <div class="offer-title">${booking.type === 'flight' ? '✈️ ' + booking.title : '🏨 ' + booking.title}</div>
+          <div class="offer-meta">${booking.details}</div>
+          <div class="badge" style="background:#f0e6d2;">Booked on: ${booking.timestamp}</div>
+        </div>
+        <div>
+          <div class="price">$${booking.totalPrice}</div>
+          <button class="book-btn" style="background:#dc3545; color:white; margin-top:8px;" data-booking-idx="${idx}">Cancel</button>
+        </div>
+      `;
+      container.appendChild(itemDiv);
+      const cancelBtn = itemDiv.querySelector("[data-booking-idx]");
+      cancelBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        cancelBooking(idx);
+      });
+    });
+  }
+
+  function cancelBooking(index) {
+    if(confirm("Cancel this booking?")) {
+      bookings.splice(index, 1);
+      saveBookingsToStorage();
+    }
+  }
+
+  // Flight search logic
+  function searchFlights() {
+    const fromElem = document.getElementById("flightFrom").value.trim().toLowerCase();
+    const toElem = document.getElementById("flightTo").value.trim().toLowerCase();
+    const departDate = document.getElementById("flightDepart").value;
+    const returnDate = document.getElementById("flightReturn").value;
+    const passengers = parseInt(document.getElementById("flightPassengers").value, 10);
+    
+    let filtered = flightOffersDB.filter(flight => 
+      flight.from.toLowerCase().includes(fromElem) && 
+      flight.to.toLowerCase().includes(toElem)
+    );
+    // if date provided, we can show a note (we still show but simulate availability)
+    if(filtered.length === 0) {
+      // fallback: show some simulated recommendations based on city
+      filtered = flightOffersDB.filter(flight => 
+        flight.from.toLowerCase().includes(fromElem) || flight.to.toLowerCase().includes(toElem)
+      ).slice(0,3);
+    }
+    // enhance each result with dynamic passenger multiplier & dates
+    currentFlightResults = filtered.map(flight => {
+      const basePrice = flight.price;
+      const passengerSurcharge = passengers > 2 ? (passengers-2) * 60 : 0;
+      const totalPrice = (basePrice + passengerSurcharge) * passengers;
+      return {
+        ...flight,
+        passengerCount: passengers,
+        totalPrice: totalPrice,
+        displayPrice: totalPrice,
+        departDateUser: departDate || flight.departureDate,
+        returnDateUser: returnDate || flight.returnDate
+      };
+    });
+    displayFlightResults(currentFlightResults);
+  }
+
+  function displayFlightResults(flights) {
+    const resultsContainer = document.getElementById("searchResultsList");
+    if(!flights.length) {
+      resultsContainer.innerHTML = `<div class="empty-msg">😞 No flights match. Try different cities.</div>`;
+      return;
+    }
+    resultsContainer.innerHTML = "";
+    flights.forEach(flight => {
+      const card = document.createElement("div");
+      card.className = "booking-card-item";
+      card.innerHTML = `
+        <div class="offer-details">
+          <div class="offer-title">${flight.from} → ${flight.to} &nbsp;✈️ ${flight.airline}</div>
+          <div class="offer-meta">🕒 ${flight.duration} &nbsp; | &nbsp; 🧑‍🤝‍🧑 ${flight.passengerCount} passenger(s)</div>
+          <div class="offer-meta">📅 Depart: ${flight.departDateUser || flight.departureDate} &nbsp; Return: ${flight.returnDateUser || flight.returnDate}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="price">$${flight.totalPrice}</div>
+          <button class="book-btn" data-flight-id="${flight.id}" data-type="flight">Book Now</button>
+        </div>
+      `;
+      resultsContainer.appendChild(card);
+      const bookBtn = card.querySelector("[data-flight-id]");
+      bookBtn.addEventListener("click", () => {
+        bookFlight(flight);
+      });
+    });
+  }
+
+  function bookFlight(flight) {
+    const title = `${flight.from} → ${flight.to} (${flight.airline})`;
+    const details = `✈️ ${flight.passengerCount} travelers · ${flight.duration} · Depart ${flight.departDateUser || flight.departureDate}`;
+    const bookingObj = {
+      type: "flight",
+      title: title,
+      details: details,
+      totalPrice: flight.totalPrice,
+      id: `FL-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+      timestamp: new Date().toLocaleString()
+    };
+    addBooking(bookingObj);
+    alert(`✅ Flight booked: ${title} for $${flight.totalPrice}`);
+  }
+
+  // Hotel search logic
+  function searchHotels() {
+    const destination = document.getElementById("hotelCity").value.trim().toLowerCase();
+    const checkin = document.getElementById("hotelCheckin").value;
+    const checkout = document.getElementById("hotelCheckout").value;
+    let guests = parseInt(document.getElementById("hotelGuests").value, 10);
+    
+    let nights = 1;
+    if(checkin && checkout) {
+      const start = new Date(checkin);
+      const end = new Date(checkout);
+      const diffTime = Math.abs(end - start);
+      nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if(nights <= 0) nights = 1;
+    } else {
+      nights = 3; // default simulation
+    }
+    
+    let filteredHotels = hotelOffersDB.filter(hotel => hotel.city.toLowerCase().includes(destination));
+    if(filteredHotels.length === 0) {
+      filteredHotels = hotelOffersDB.slice(0, 3).map(h => ({...h, note: "Popular choice"}));
+    }
+    
+    currentHotelResults = filteredHotels.map(hotel => {
+      let baseNightPrice = hotel.pricePerNight;
+      let guestExtra = guests > 2 ? (guests-2) * 40 : 0;
+      let totalForStay = (baseNightPrice + guestExtra) * nights;
+      return {
+        ...hotel,
+        nights: nights,
+        guests: guests,
+        totalPrice: totalForStay,
+        nightlyDisplay: baseNightPrice + (guestExtra>0 ? ` +$${guestExtra}/night extra guest` : "")
+      };
+    });
+    displayHotelResults(currentHotelResults);
+  }
+
+  function displayHotelResults(hotels) {
+    const resultsContainer = document.getElementById("searchResultsList");
+    if(!hotels.length){
+      resultsContainer.innerHTML = `<div class="empty-msg">🏨 No hotels found. Try another destination.</div>`;
+      return;
+    }
+    resultsContainer.innerHTML = "";
+    hotels.forEach(hotel => {
+      const card = document.createElement("div");
+      card.className = "booking-card-item";
+      card.innerHTML = `
+        <div class="offer-details">
+          <div class="offer-title">🏨 ${hotel.hotelName} (${hotel.city}) ★ ${hotel.stars}</div>
+          <div class="offer-meta">⭐ Rating: ${hotel.rating} &nbsp;| 👥 ${hotel.guests} guest(s) &nbsp;| 🌙 ${hotel.nights} night(s)</div>
+          <div class="offer-meta">💰 ${hotel.nightlyDisplay} per night</div>
+        </div>
+        <div>
+          <div class="price">$${hotel.totalPrice}</div>
+          <button class="book-btn" data-hotel-id="${hotel.id}" data-type="hotel">Book Now</button>
+        </div>
+      `;
+      resultsContainer.appendChild(card);
+      const bookBtn = card.querySelector("[data-hotel-id]");
+      bookBtn.addEventListener("click", () => {
+        bookHotel(hotel);
+      });
+    });
+  }
+
+  function bookHotel(hotel) {
+    const title = `${hotel.hotelName}, ${hotel.city} (${hotel.stars}★)`;
+    const details = `🏨 ${hotel.nights} nights · ${hotel.guests} guests · rating ${hotel.rating}/10`;
+    const bookingObj = {
+      type: "hotel",
+      title: title,
+      details: details,
+      totalPrice: hotel.totalPrice,
+      id: `HT-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+      timestamp: new Date().toLocaleString()
+    };
+    addBooking(bookingObj);
+    alert(`🏨 Hotel booked: ${title} for $${hotel.totalPrice}`);
+  }
+
+  // TAB switching & reset search results optionally
+  function initTabs() {
+    const flightTab = document.querySelector("[data-tab='flights']");
+    const hotelTab = document.querySelector("[data-tab='hotels']");
+    const flightsPane = document.getElementById("flightsPane");
+    const hotelsPane = document.getElementById("hotelsPane");
+    
+    function setActive(tabId) {
+      if(tabId === 'flights') {
+        flightTab.classList.add("active");
+        hotelTab.classList.remove("active");
+        flightsPane.classList.add("active-pane");
+        hotelsPane.classList.remove("active-pane");
+        activeTab = "flights";
+      } else {
+        hotelTab.classList.add("active");
+        flightTab.classList.remove("active");
+        hotelsPane.classList.add("active-pane");
+        flightsPane.classList.remove("active-pane");
+        activeTab = "hotels";
+      }
+      // clear previous results when switching (good UX)
+      const resultsDiv = document.getElementById("searchResultsList");
+      resultsDiv.innerHTML = `<div class="empty-msg">🔍 Use search to find ${activeTab === 'flights' ? 'flights' : 'hotels'}</div>`;
+      currentFlightResults = [];
+      currentHotelResults = [];
+    }
+    
+    flightTab.addEventListener("click", () => setActive("flights"));
+    hotelTab.addEventListener("click", () => setActive("hotels"));
+  }
+  
+  // set default dates for smoother demo
+  function setDefaultDates() {
+    const today = new Date();
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
+    const nextWeekPlus = new Date(today);
+    nextWeekPlus.setDate(today.getDate() + 14);
+    const yyyyMMdd = (date) => date.toISOString().split('T')[0];
+    document.getElementById("flightDepart").value = yyyyMMdd(nextWeek);
+    document.getElementById("flightReturn").value = yyyyMMdd(nextWeekPlus);
+    document.getElementById("hotelCheckin").value = yyyyMMdd(nextWeek);
+    document.getElementById("hotelCheckout").value = yyyyMMdd(nextWeekPlus);
+  }
+  
+  // Attach search listeners
+  document.getElementById("searchFlightsBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    if(activeTab !== "flights") {
+      // manual safety
+      document.querySelector("[data-tab='flights']").click();
+    }
+    searchFlights();
+  });
+  document.getElementById("searchHotelsBtn").addEventListener("click", (e) => {
+    e.preventDefault();
+    if(activeTab !== "hotels") {
+      document.querySelector("[data-tab='hotels']").click();
+    }
+    searchHotels();
+  });
+  
+  // initial load
+  function init() {
+    loadBookingsFromStorage();
+    initTabs();
+    setDefaultDates();
+    // Initial empty results + sample greeting
+    document.getElementById("searchResultsList").innerHTML = `<div class="empty-msg">🌍 Find your perfect trip — search flights or hotels above</div>`;
+  }
+  
+  init();
+</script>
+</body>
+</html>
